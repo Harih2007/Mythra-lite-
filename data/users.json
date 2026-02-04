@@ -1,0 +1,27 @@
+[
+  {
+    "id": 1,
+    "username": "user",
+    "password": "user",
+    "role": "user",
+    "name": "Regular User",
+    "disabled": false
+  },
+  {
+    "id": 2,
+    "username": "merchant",
+    "password": "merchant",
+    "role": "merchant",
+    "name": "Merchant User",
+    "merchantId": "M001",
+    "disabled": false
+  },
+  {
+    "id": 3,
+    "username": "admin",
+    "password": "admin",
+    "role": "admin",
+    "name": "Admin User",
+    "disabled": false
+  }
+]

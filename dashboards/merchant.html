@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Merchant Dashboard - Myntra Lite</title>
+    <link rel="stylesheet" href="../css/main.css">
+    <script src="../js/state-manager.js"></script>
+    <script src="../js/role-guard.js"></script>
+    <script src="../js/products.js"></script>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <h1 class="site-name">Myntra Lite</h1>
+            <div class="nav-links">
+                <a href="merchant.html" class="active">My Products</a>
+                <a href="../index.html">Logout</a>
+            </div>
+        </div>
+    </nav>
+    
+    <main class="dashboard-main">
+        <div class="dashboard-header">
+            <h2>Merchant Dashboard</h2>
+            <p>Manage your product listings</p>
+        </div>
+        
+        <div class="dashboard-content">
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <h3>Total Products</h3>
+                    <p class="stat-number" id="total-products">0</p>
+                </div>
+            </div>
+            
+            <div class="action-section">
+                <button class="btn btn-primary" onclick="toggleAddProductForm()">Add New Product</button>
+            </div>
+            
+            <div id="add-product-form" class="product-form" style="display: none;">
+                <h3>Add New Product</h3>
+                <form onsubmit="handleAddProduct(event)">
+                    <div class="form-group">
+                        <label for="product-name">Product Name:</label>
+                        <input type="text" id="product-name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="product-category">Category:</label>
+                        <input type="text" id="product-category" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="product-price">Price (₹):</label>
+                        <input type="number" id="product-price" min="0" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="product-image">Image URL:</label>
+                        <input type="text" id="product-image" placeholder="https://example.com/image.jpg or emoji" required>
+                        <small>Enter image URL or emoji (e.g., 👕)</small>
+                    </div>
+                    <div class="form-group">
+                        <label for="product-description">Description:</label>
+                        <textarea id="product-description" rows="3" placeholder="Product description"></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Add Product</button>
+                    <button type="button" class="btn btn-secondary" onclick="toggleAddProductForm()">Cancel</button>
+                </form>
+            </div>
+            
+            <div id="edit-product-form" class="product-form" style="display: none;">
+                <h3>Edit Product</h3>
+                <form onsubmit="handleEditProduct(event)">
+                    <input type="hidden" id="edit-product-id">
+                    <div class="form-group">
+                        <label for="edit-product-name">Product Name:</label>
+                        <input type="text" id="edit-product-name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="edit-product-category">Category:</label>
+                        <input type="text" id="edit-product-category" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="edit-product-price">Price (₹):</label>
+                        <input type="number" id="edit-product-price" min="0" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="edit-product-image">Image URL:</label>
+                        <input type="text" id="edit-product-image" placeholder="https://example.com/image.jpg or emoji" required>
+                        <small>Enter image URL or emoji (e.g., 👕)</small>
+                    </div>
+                    <div class="form-group">
+                        <label for="edit-product-description">Description:</label>
+                        <textarea id="edit-product-description" rows="3" placeholder="Product description"></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Update Product</button>
+                    <button type="button" class="btn btn-secondary" onclick="toggleEditProductForm()">Cancel</button>
+                </form>
+            </div>
+            
+            <div class="products-list" id="merchant-products">
+                <!-- Products will be loaded dynamically -->
+            </div>
+        </div>
+    </main>
+    
+    <script src="../js/main.js"></script>
+    <script>
+        // Merchant Dashboard Logic
+        let merchantProducts = [];
+        let currentUser = null;
+        
+        // Initialize merchant dashboard
+        async function initMerchantDashboard() {
+            currentUser = StateManager.getCurrentUser();
+            await refreshProducts();
+            
+            // Listen for product updates (from other tabs or admin)
+            window.addEventListener('productsUpdated', refreshProducts);
+        }
+        
+        // Refresh products from state
+        async function refreshProducts() {
+            const allProducts = await getAllProducts();
+            merchantProducts = getProductsByMerchant(allProducts, currentUser.merchantId);
+            displayMerchantProducts();
+            updateStats();
+        }
+        
+        // Display merchant's products
+        function displayMerchantProducts() {
+            const container = document.getElementById('merchant-products');
+            
+            if (merchantProducts.length === 0) {
+                container.innerHTML = '<div class="empty-state">No products yet. Add your first product!</div>';
+                return;
+            }
+            
+            container.innerHTML = '';
+            
+            merchantProducts.forEach(product => {
+                // Check if image is URL or emoji
+                const isImageUrl = product.image.startsWith('http');
+                const imageHtml = isImageUrl 
+                    ? `<img src="${product.image}" alt="${product.name}" onerror="this.outerHTML='<div class=\\'emoji\\'>📦</div>'">` 
+                    : `<div class="emoji">${product.image}</div>`;
+                
+                const card = document.createElement('div');
+                card.className = 'product-item';
+                card.innerHTML = `
+                    <div class="product-item-image">${imageHtml}</div>
+                    <div class="product-item-info">
+                        <h4>${product.name}</h4>
+                        <p>${product.category} - ₹${product.price.toLocaleString()}</p>
+                        <span class="product-id">ID: ${product.id}</span>
+                    </div>
+                    <div class="product-item-actions">
+                        <button class="btn btn-secondary" onclick="showEditForm('${product.id}')">Edit</button>
+                        <button class="btn btn-danger" onclick="handleDeleteProduct('${product.id}', this)">Delete</button>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+        
+        // Update statistics
+        function updateStats() {
+            document.getElementById('total-products').textContent = merchantProducts.length;
+        }
+        
+        // Toggle add product form
+        function toggleAddProductForm() {
+            const form = document.getElementById('add-product-form');
+            const isVisible = form.style.display !== 'none';
+            form.style.display = isVisible ? 'none' : 'block';
+            
+            // Hide edit form if showing add form
+            if (!isVisible) {
+                document.getElementById('edit-product-form').style.display = 'none';
+            }
+        }
+        
+        // Handle add product with validation and feedback
+        async function handleAddProduct(event) {
+            event.preventDefault();
+            
+            const submitBtn = event.target.querySelector('button[type="submit"]');
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Adding...';
+            
+            const newProduct = {
+                name: document.getElementById('product-name').value.trim(),
+                category: document.getElementById('product-category').value.trim(),
+                price: parseInt(document.getElementById('product-price').value),
+                image: document.getElementById('product-image').value.trim(),
+                description: document.getElementById('product-description').value.trim() || 'No description available.',
+                merchantId: currentUser.merchantId
+            };
+            
+            await addProduct(newProduct);
+            
+            // Show success feedback
+            submitBtn.textContent = 'Added!';
+            
+            // Reset form and hide after delay
+            setTimeout(() => {
+                event.target.reset();
+                toggleAddProductForm();
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Add Product';
+            }, 1000);
+            
+            // Products will auto-refresh via event listener
+        }
+        
+        // Show edit form
+        function showEditForm(productId) {
+            const product = merchantProducts.find(p => p.id === productId);
+            if (!product) return;
+            
+            // Hide add form
+            document.getElementById('add-product-form').style.display = 'none';
+            
+            // Populate edit form
+            document.getElementById('edit-product-id').value = product.id;
+            document.getElementById('edit-product-name').value = product.name;
+            document.getElementById('edit-product-category').value = product.category;
+            document.getElementById('edit-product-price').value = product.price;
+            document.getElementById('edit-product-image').value = product.image;
+            document.getElementById('edit-product-description').value = product.description || '';
+            
+            // Show edit form
+            document.getElementById('edit-product-form').style.display = 'block';
+            
+            // Scroll to form
+            document.getElementById('edit-product-form').scrollIntoView({ behavior: 'smooth' });
+        }
+        
+        // Toggle edit product form
+        function toggleEditProductForm() {
+            const form = document.getElementById('edit-product-form');
+            form.style.display = 'none';
+        }
+        
+        // Handle edit product with feedback
+        async function handleEditProduct(event) {
+            event.preventDefault();
+            
+            const submitBtn = event.target.querySelector('button[type="submit"]');
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Updating...';
+            
+            const productId = document.getElementById('edit-product-id').value;
+            const updatedData = {
+                name: document.getElementById('edit-product-name').value.trim(),
+                category: document.getElementById('edit-product-category').value.trim(),
+                price: parseInt(document.getElementById('edit-product-price').value),
+                image: document.getElementById('edit-product-image').value.trim(),
+                description: document.getElementById('edit-product-description').value.trim() || 'No description available.'
+            };
+            
+            await updateProduct(productId, updatedData);
+            
+            // Show success feedback
+            submitBtn.textContent = 'Updated!';
+            
+            // Hide form after delay
+            setTimeout(() => {
+                toggleEditProductForm();
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Update Product';
+            }, 1000);
+            
+            // Products will auto-refresh via event listener
+        }
+        
+        // Handle delete product with feedback
+        async function handleDeleteProduct(productId, button) {
+            // Disable button
+            button.disabled = true;
+            button.textContent = 'Deleting...';
+            
+            await deleteProduct(productId);
+            
+            // Products will auto-refresh via event listener
+        }
+        
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', initMerchantDashboard);
+    </script>
+</body>
+</html>

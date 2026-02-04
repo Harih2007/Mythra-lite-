@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Details - Myntra Lite</title>
+    <link rel="stylesheet" href="../css/main.css">
+    <script src="../js/state-manager.js"></script>
+    <script src="../js/role-guard.js"></script>
+    <script src="../js/products.js"></script>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <h1 class="site-name">Myntra Lite</h1>
+            <div class="nav-links">
+                <a href="user.html">← Back to Products</a>
+                <a href="user.html">Cart (<span id="nav-cart-count">0</span>)</a>
+                <a href="../index.html">Logout</a>
+            </div>
+        </div>
+    </nav>
+    
+    <main class="dashboard-main">
+        <div id="product-detail-container" class="product-detail-container">
+            <!-- Product details will be loaded here -->
+        </div>
+    </main>
+    
+    <script src="../js/main.js"></script>
+    <script>
+        let currentProduct = null;
+        let allProducts = [];
+        
+        // Get product ID from URL
+        function getProductIdFromUrl() {
+            const params = new URLSearchParams(window.location.search);
+            return params.get('id');
+        }
+        
+        // Initialize product detail page
+        async function initProductDetail() {
+            const currentUser = StateManager.getCurrentUser();
+            
+            // Redirect to login if not authenticated
+            if (!currentUser) {
+                window.location.href = '../login.html';
+                return;
+            }
+            
+            allProducts = await getAllProducts();
+            const productId = getProductIdFromUrl();
+            
+            if (!productId) {
+                showError('Product not found');
+                return;
+            }
+            
+            currentProduct = allProducts.find(p => p.id === productId);
+            
+            if (!currentProduct) {
+                showError('Product not found');
+                return;
+            }
+            
+            displayProductDetail();
+            updateCartCount();
+            
+            // Listen for cart updates
+            window.addEventListener('cartUpdated', updateCartCount);
+        }
+        
+        // Display product details
+        function displayProductDetail() {
+            const container = document.getElementById('product-detail-container');
+            
+            // Check if image is URL or emoji
+            const isImageUrl = currentProduct.image.startsWith('http');
+            const imageHtml = isImageUrl 
+                ? `<img src="${currentProduct.image}" alt="${currentProduct.name}" onerror="this.outerHTML='<div class=\\'placeholder-image\\'>📦</div>'">` 
+                : `<div class="placeholder-image">${currentProduct.image}</div>`;
+            
+            container.innerHTML = `
+                <div class="product-detail-grid">
+                    <div class="product-detail-image">
+                        ${imageHtml}
+                    </div>
+                    
+                    <div class="product-detail-info">
+                        <h1 class="product-detail-title">${currentProduct.name}</h1>
+                        <p class="product-detail-category">${currentProduct.category}</p>
+                        <p class="product-detail-price">₹${currentProduct.price.toLocaleString()}</p>
+                        
+                        <div class="product-detail-description">
+                            <h3>Description</h3>
+                            <p>${currentProduct.description || 'No description available.'}</p>
+                        </div>
+                        
+                        <div class="product-detail-meta">
+                            <p><strong>Product ID:</strong> ${currentProduct.id}</p>
+                            <p><strong>Merchant:</strong> ${currentProduct.merchantId}</p>
+                        </div>
+                        
+                        <div class="product-detail-actions">
+                            <button class="btn btn-primary btn-large" onclick="handleAddToCart('${currentProduct.id}', this)">
+                                Add to Cart
+                            </button>
+                            <button class="btn btn-secondary btn-large" onclick="window.history.back()">
+                                Back to Products
+                            </button>
+                        </div>
+                        
+                        <div id="add-to-cart-message" class="add-to-cart-message"></div>
+                    </div>
+                </div>
+            `;
+        }
+        
+        // Show error message
+        function showError(message) {
+            const container = document.getElementById('product-detail-container');
+            container.innerHTML = `
+                <div class="empty-state">
+                    <h2>${message}</h2>
+                    <button class="btn btn-primary" onclick="window.location.href='user.html'">
+                        Back to Products
+                    </button>
+                </div>
+            `;
+        }
+        
+        // Handle add to cart
+        function handleAddToCart(productId, button) {
+            button.disabled = true;
+            const originalText = button.textContent;
+            button.textContent = 'Adding...';
+            
+            const count = addToCart(productId);
+            updateCartCount();
+            
+            // Show success message
+            const messageEl = document.getElementById('add-to-cart-message');
+            messageEl.textContent = `Added to cart! You now have ${count} of this item.`;
+            messageEl.style.display = 'block';
+            
+            button.textContent = 'Added!';
+            
+            setTimeout(() => {
+                button.disabled = false;
+                button.textContent = originalText;
+                messageEl.style.display = 'none';
+            }, 2000);
+        }
+        
+        // Update cart count
+        function updateCartCount() {
+            document.getElementById('nav-cart-count').textContent = getCartCount();
+        }
+        
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', initProductDetail);
+    </script>
+</body>
+</html>

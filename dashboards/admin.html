@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - Myntra Lite</title>
+    <link rel="stylesheet" href="../css/main.css">
+    <script src="../js/state-manager.js"></script>
+    <script src="../js/role-guard.js"></script>
+    <script src="../js/products.js"></script>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <h1 class="site-name">Myntra Lite</h1>
+            <div class="nav-links">
+                <a href="admin.html" class="active">Dashboard</a>
+                <a href="../index.html">Logout</a>
+            </div>
+        </div>
+    </nav>
+    
+    <main class="dashboard-main">
+        <div class="dashboard-header">
+            <h2>Admin Dashboard</h2>
+            <p>Platform overview and management</p>
+        </div>
+        
+        <div class="dashboard-content">
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <h3>Total Users</h3>
+                    <p class="stat-number" id="total-users">0</p>
+                </div>
+                <div class="stat-card">
+                    <h3>Total Merchants</h3>
+                    <p class="stat-number" id="total-merchants">0</p>
+                </div>
+                <div class="stat-card">
+                    <h3>Total Products</h3>
+                    <p class="stat-number" id="total-products">0</p>
+                </div>
+                <div class="stat-card">
+                    <h3>Total Orders</h3>
+                    <p class="stat-number" id="total-orders">0</p>
+                </div>
+                <div class="stat-card">
+                    <h3>Total Revenue</h3>
+                    <p class="stat-number" id="total-revenue">₹0</p>
+                </div>
+            </div>
+            
+            <div class="admin-section">
+                <h3>System Management</h3>
+                <div class="action-section">
+                    <button class="btn btn-warning" onclick="resetToDefaultData()">Reset to Default Data</button>
+                    <span id="reset-message" style="margin-left: 1rem; color: #48bb78; font-weight: 600;"></span>
+                </div>
+            </div>
+
+            <div class="admin-section">
+                <h3>All Users</h3>
+                <div id="users-list" class="data-list">
+                    <!-- Users will be loaded dynamically -->
+                </div>
+            </div>
+            
+            <div class="admin-section">
+                <h3>All Products</h3>
+                <div id="products-list" class="data-list">
+                    <!-- Products will be loaded dynamically -->
+                </div>
+            </div>
+
+            <div class="admin-section">
+                <h3>All Orders</h3>
+                <div id="orders-list" class="data-list">
+                    <!-- Orders will be loaded dynamically -->
+                </div>
+            </div>
+        </div>
+    </main>
+    
+    <script src="../js/main.js"></script>
+    <script>
+        // Admin Dashboard Logic
+        let allUsers = [];
+        let allProducts = [];
+        let allOrders = [];
+        
+        // Initialize admin dashboard
+        async function initAdminDashboard() {
+            await refreshData();
+            
+            // Listen for state updates
+            window.addEventListener('usersUpdated', refreshUsers);
+            window.addEventListener('productsUpdated', refreshProducts);
+            window.addEventListener('ordersUpdated', refreshOrders);
+        }
+        
+        // Refresh all data
+        async function refreshData() {
+            await refreshUsers();
+            await refreshProducts();
+            await refreshOrders();
+        }
+        
+        // Refresh users from state
+        async function refreshUsers() {
+            allUsers = await StateManager.getUsers();
+            displayUsers();
+            updateStats();
+        }
+        
+        // Refresh products from state
+        async function refreshProducts() {
+            allProducts = await getAllProducts();
+            displayProducts();
+            updateStats();
+        }
+
+        // Refresh orders from state
+        async function refreshOrders() {
+            allOrders = StateManager.getOrders();
+            displayOrders();
+            updateStats();
+        }
+        
+        // Display all users with status and controls
+        function displayUsers() {
+            const container = document.getElementById('users-list');
+            container.innerHTML = '';
+            
+            allUsers.forEach(user => {
+                const isDisabled = user.disabled || false;
+                const item = document.createElement('div');
+                item.className = 'data-item' + (isDisabled ? ' disabled-item' : '');
+                item.innerHTML = `
+                    <div class="data-item-info">
+                        <strong>${user.name}</strong> (@${user.username})
+                        <span class="badge badge-${user.role}">${user.role}</span>
+                        ${isDisabled ? '<span class="status-badge status-disabled">Disabled</span>' : '<span class="status-badge status-active">Active</span>'}
+                    </div>
+                    <div class="data-item-actions">
+                        ${user.role !== 'admin' ? `
+                            <button class="btn ${isDisabled ? 'btn-success' : 'btn-warning'}" 
+                                    onclick="toggleUserStatus(${user.id}, ${isDisabled}, this)">
+                                ${isDisabled ? 'Enable' : 'Disable'}
+                            </button>
+                        ` : '<span class="admin-note">Cannot disable admin</span>'}
+                    </div>
+                `;
+                container.appendChild(item);
+            });
+        }
+        
+        // Display all products with merchant info
+        function displayProducts() {
+            const container = document.getElementById('products-list');
+            
+            if (allProducts.length === 0) {
+                container.innerHTML = '<div class="empty-state">No products in the system.</div>';
+                return;
+            }
+            
+            container.innerHTML = '';
+            
+            allProducts.forEach(product => {
+                // Check if image is URL or emoji
+                const isImageUrl = product.image.startsWith('http');
+                const imageHtml = isImageUrl 
+                    ? `<img src="${product.image}" alt="${product.name}" onerror="this.outerHTML='<div class=\\'emoji\\'>📦</div>'">` 
+                    : `<div class="emoji">${product.image}</div>`;
+                
+                const item = document.createElement('div');
+                item.className = 'data-item';
+                item.innerHTML = `
+                    <div class="data-item-image">${imageHtml}</div>
+                    <div class="data-item-info">
+                        <strong>${product.name}</strong>
+                        <p>${product.category} - ₹${product.price.toLocaleString()}</p>
+                        <small>Merchant: ${product.merchantId} | ID: ${product.id}</small>
+                    </div>
+                    <div class="data-item-actions">
+                        <button class="btn btn-danger" onclick="handleRemoveProduct('${product.id}', this)">Remove</button>
+                    </div>
+                `;
+                container.appendChild(item);
+            });
+        }
+
+        // Display all orders
+        function displayOrders() {
+            const container = document.getElementById('orders-list');
+            
+            if (allOrders.length === 0) {
+                container.innerHTML = '<div class="empty-state">No orders placed yet.</div>';
+                return;
+            }
+            
+            container.innerHTML = '';
+            
+            // Sort orders by date (newest first)
+            const sortedOrders = [...allOrders].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+            
+            sortedOrders.forEach(order => {
+                const orderDate = new Date(order.createdAt).toLocaleDateString('en-IN', {
+                    year: 'numeric',
+                    month: 'short',
+                    day: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                });
+                
+                const orderCard = document.createElement('div');
+                orderCard.className = 'order-card admin-order-card';
+                
+                let itemsHtml = '';
+                order.items.forEach(item => {
+                    itemsHtml += `
+                        <div class="order-item">
+                            <span class="order-item-name">${item.productName}</span>
+                            <span class="order-item-qty">Qty: ${item.quantity}</span>
+                            <span class="order-item-price">₹${item.total.toLocaleString()}</span>
+                        </div>
+                    `;
+                });
+                
+                orderCard.innerHTML = `
+                    <div class="order-header">
+                        <div class="order-id">Order #${order.orderId}</div>
+                        <div class="order-status status-${order.status.toLowerCase()}">${order.status}</div>
+                    </div>
+                    <div class="order-meta">
+                        <span>Customer: ${order.userName}</span>
+                        <span>${orderDate}</span>
+                    </div>
+                    <div class="order-items">
+                        ${itemsHtml}
+                    </div>
+                    <div class="order-total">
+                        <strong>Total Amount:</strong> ₹${order.totalAmount.toLocaleString()}
+                    </div>
+                `;
+                
+                container.appendChild(orderCard);
+            });
+        }
+        
+        // Update statistics
+        function updateStats() {
+            const userCount = allUsers.filter(u => u.role === 'user').length;
+            const merchantCount = allUsers.filter(u => u.role === 'merchant').length;
+            const totalRevenue = allOrders.reduce((sum, order) => sum + order.totalAmount, 0);
+            
+            document.getElementById('total-users').textContent = userCount;
+            document.getElementById('total-merchants').textContent = merchantCount;
+            document.getElementById('total-products').textContent = allProducts.length;
+            document.getElementById('total-orders').textContent = allOrders.length;
+            document.getElementById('total-revenue').textContent = '₹' + totalRevenue.toLocaleString();
+        }
+        
+        // Toggle user/merchant status (enable/disable)
+        async function toggleUserStatus(userId, currentlyDisabled, button) {
+            // Disable button during processing
+            button.disabled = true;
+            button.textContent = currentlyDisabled ? 'Enabling...' : 'Disabling...';
+            
+            // Update user status
+            const users = await StateManager.getUsers();
+            const userIndex = users.findIndex(u => u.id === userId);
+            
+            if (userIndex !== -1) {
+                users[userIndex].disabled = !currentlyDisabled;
+                StateManager.setUsers(users);
+                
+                // Show success feedback
+                button.textContent = currentlyDisabled ? 'Enabled!' : 'Disabled!';
+                
+                // Users will auto-refresh via event listener
+                setTimeout(() => {
+                    button.disabled = false;
+                }, 1000);
+            }
+        }
+        
+        // Handle remove product with feedback
+        async function handleRemoveProduct(productId, button) {
+            // Disable button
+            button.disabled = true;
+            button.textContent = 'Removing...';
+            
+            await deleteProduct(productId);
+            
+            // Products will auto-refresh via event listener
+        }
+
+        // Reset to default data (clears localStorage and reloads)
+        function resetToDefaultData() {
+            const messageEl = document.getElementById('reset-message');
+            messageEl.textContent = 'Resetting...';
+            
+            // Clear all localStorage
+            StateManager.clearAll();
+            
+            messageEl.textContent = 'Reset complete! Reloading...';
+            
+            // Reload page after short delay
+            setTimeout(() => {
+                location.reload();
+            }, 1000);
+        }
+        
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', initAdminDashboard);
+    </script>
+</body>
+</html>

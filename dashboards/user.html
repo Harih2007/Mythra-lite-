@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Dashboard - Myntra Lite</title>
+    <link rel="stylesheet" href="../css/main.css">
+    <script src="../js/state-manager.js"></script>
+    <script src="../js/role-guard.js"></script>
+    <script src="../js/products.js"></script>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <h1 class="site-name">Myntra Lite</h1>
+            <div class="nav-links">
+                <a href="#" id="products-link">Products</a>
+                <a href="#" id="view-cart-link">Cart (<span id="nav-cart-count">0</span>)</a>
+                <a href="#" id="view-orders-link">My Orders</a>
+                <a href="../index.html">Logout</a>
+            </div>
+        </div>
+    </nav>
+    
+    <main class="dashboard-main">
+        <!-- Products Section -->
+        <div id="products-section">
+            <div class="dashboard-header">
+                <h2>Browse Products</h2>
+                <p>Explore our collection of fashion and lifestyle items</p>
+                <div class="cart-info">
+                    Cart: <span id="cart-count">0</span> items
+                </div>
+            </div>
+            
+            <div class="filters-section">
+                <div class="filter-group">
+                    <label for="category-filter">Category:</label>
+                    <select id="category-filter">
+                        <option value="all">All Categories</option>
+                    </select>
+                </div>
+                
+                <div class="filter-group">
+                    <label for="min-price">Min Price:</label>
+                    <input type="number" id="min-price" value="0" min="0">
+                </div>
+                
+                <div class="filter-group">
+                    <label for="max-price">Max Price:</label>
+                    <input type="number" id="max-price" value="10000" min="0">
+                </div>
+                
+                <button id="apply-filters" class="btn btn-secondary">Apply Filters</button>
+            </div>
+            
+            <div class="products-grid" id="products-container">
+                <!-- Products will be loaded dynamically -->
+            </div>
+        </div>
+
+        <!-- Cart Section -->
+        <div id="cart-section" style="display: none;">
+            <div class="dashboard-header">
+                <h2>Shopping Cart</h2>
+                <p>Review your selected items</p>
+                <button class="btn btn-secondary" onclick="showProductsSection()">← Continue Shopping</button>
+            </div>
+            
+            <div class="cart-container">
+                <div id="cart-items" class="cart-items-list">
+                    <!-- Cart items will be loaded dynamically -->
+                </div>
+                
+                <div class="cart-summary">
+                    <h3>Order Summary</h3>
+                    <div class="summary-row">
+                        <span>Total Items:</span>
+                        <span id="summary-items">0</span>
+                    </div>
+                    <div class="summary-row">
+                        <span>Subtotal:</span>
+                        <span id="summary-subtotal">₹0</span>
+                    </div>
+                    <div class="summary-row total-row">
+                        <span>Total:</span>
+                        <span id="summary-total">₹0</span>
+                    </div>
+                    <button class="btn btn-primary btn-block" onclick="handleCheckout()">Proceed to Checkout</button>
+                    <button class="btn btn-danger btn-block" onclick="handleClearCart()">Clear Cart</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Orders Section -->
+        <div id="orders-section" style="display: none;">
+            <div class="dashboard-header">
+                <h2>My Orders</h2>
+                <p>Track your order history</p>
+                <button class="btn btn-secondary" onclick="showProductsSection()">← Continue Shopping</button>
+            </div>
+            
+            <div id="orders-list" class="orders-list">
+                <!-- Orders will be loaded dynamically -->
+            </div>
+        </div>
+    </main>
+    
+    <script src="../js/main.js"></script>
+    <script>
+        // User Dashboard Logic
+        let allProducts = [];
+        let currentFilters = { category: 'all', minPrice: 0, maxPrice: 999999 };
+        let currentUser = null;
+        
+        // Initialize dashboard
+        async function initUserDashboard() {
+            currentUser = StateManager.getCurrentUser();
+            allProducts = await getAllProducts();
+            displayProducts(allProducts);
+            setupFilters();
+            updateCartCount();
+            setupNavigation();
+            
+            // Listen for product updates from other tabs/roles
+            window.addEventListener('productsUpdated', async function() {
+                allProducts = await getAllProducts();
+                applyFilters();
+            });
+            
+            // Listen for cart updates
+            window.addEventListener('cartUpdated', function() {
+                updateCartCount();
+                if (document.getElementById('cart-section').style.display !== 'none') {
+                    displayCart();
+                }
+            });
+
+            // Listen for order updates
+            window.addEventListener('ordersUpdated', function() {
+                if (document.getElementById('orders-section').style.display !== 'none') {
+                    displayOrders();
+                }
+            });
+        }
+        
+        // Setup navigation links
+        function setupNavigation() {
+            document.getElementById('products-link').addEventListener('click', function(e) {
+                e.preventDefault();
+                showProductsSection();
+            });
+
+            document.getElementById('view-cart-link').addEventListener('click', function(e) {
+                e.preventDefault();
+                showCartSection();
+            });
+
+            document.getElementById('view-orders-link').addEventListener('click', function(e) {
+                e.preventDefault();
+                showOrdersSection();
+            });
+        }
+        
+        // Show products section
+        function showProductsSection() {
+            document.getElementById('products-section').style.display = 'block';
+            document.getElementById('cart-section').style.display = 'none';
+            document.getElementById('orders-section').style.display = 'none';
+            updateNavActive('products-link');
+        }
+        
+        // Show cart section
+        function showCartSection() {
+            document.getElementById('products-section').style.display = 'none';
+            document.getElementById('cart-section').style.display = 'block';
+            document.getElementById('orders-section').style.display = 'none';
+            updateNavActive('view-cart-link');
+            displayCart();
+        }
+
+        // Show orders section
+        function showOrdersSection() {
+            document.getElementById('products-section').style.display = 'none';
+            document.getElementById('cart-section').style.display = 'none';
+            document.getElementById('orders-section').style.display = 'block';
+            updateNavActive('view-orders-link');
+            displayOrders();
+        }
+
+        // Update active nav link
+        function updateNavActive(activeId) {
+            document.querySelectorAll('.nav-links a').forEach(link => {
+                link.classList.remove('active');
+            });
+            document.getElementById(activeId).classList.add('active');
+        }
+        
+        // Display cart items
+        async function displayCart() {
+            const cart = getCart();
+            const container = document.getElementById('cart-items');
+            
+            if (Object.keys(cart).length === 0) {
+                container.innerHTML = '<div class="empty-state">Your cart is empty. Start shopping!</div>';
+                updateCartSummary(0, 0);
+                return;
+            }
+            
+            container.innerHTML = '';
+            let totalItems = 0;
+            let subtotal = 0;
+            
+            for (const [productId, quantity] of Object.entries(cart)) {
+                const product = allProducts.find(p => p.id === productId);
+                if (!product) continue;
+                
+                totalItems += quantity;
+                subtotal += product.price * quantity;
+                
+                // Check if image is URL or emoji
+                const isImageUrl = product.image.startsWith('http');
+                const imageHtml = isImageUrl 
+                    ? `<img src="${product.image}" alt="${product.name}" onerror="this.outerHTML='<div class=\\'emoji\\'>📦</div>'">` 
+                    : `<div class="emoji">${product.image}</div>`;
+                
+                const cartItem = document.createElement('div');
+                cartItem.className = 'cart-item';
+                cartItem.innerHTML = `
+                    <div class="cart-item-image">${imageHtml}</div>
+                    <div class="cart-item-info">
+                        <h4>${product.name}</h4>
+                        <p class="cart-item-category">${product.category}</p>
+                        <p class="cart-item-price">₹${product.price.toLocaleString()}</p>
+                    </div>
+                    <div class="cart-item-quantity">
+                        <button class="qty-btn" onclick="updateCartQuantity('${productId}', ${quantity - 1})">-</button>
+                        <span class="qty-display">${quantity}</span>
+                        <button class="qty-btn" onclick="updateCartQuantity('${productId}', ${quantity + 1})">+</button>
+                    </div>
+                    <div class="cart-item-total">
+                        <p class="item-total">₹${(product.price * quantity).toLocaleString()}</p>
+                        <button class="btn btn-danger btn-sm" onclick="removeFromCart('${productId}')">Remove</button>
+                    </div>
+                `;
+                container.appendChild(cartItem);
+            }
+            
+            updateCartSummary(totalItems, subtotal);
+        }
+        
+        // Update cart summary
+        function updateCartSummary(totalItems, subtotal) {
+            document.getElementById('summary-items').textContent = totalItems;
+            document.getElementById('summary-subtotal').textContent = '₹' + subtotal.toLocaleString();
+            document.getElementById('summary-total').textContent = '₹' + subtotal.toLocaleString();
+        }
+        
+        // Update cart quantity
+        function updateCartQuantity(productId, newQuantity) {
+            if (newQuantity <= 0) {
+                removeFromCart(productId);
+                return;
+            }
+            
+            const cart = getCart();
+            cart[productId] = newQuantity;
+            StateManager.setCart(cart);
+        }
+        
+        // Remove from cart
+        function removeFromCart(productId) {
+            const cart = getCart();
+            delete cart[productId];
+            StateManager.setCart(cart);
+        }
+        
+        // Clear cart
+        function handleClearCart() {
+            StateManager.setCart({});
+        }
+        
+        // Checkout handler - creates order and clears cart
+        function handleCheckout() {
+            const cart = getCart();
+            if (Object.keys(cart).length === 0) return;
+            
+            // Calculate total
+            let totalAmount = 0;
+            const orderItems = [];
+            
+            for (const [productId, quantity] of Object.entries(cart)) {
+                const product = allProducts.find(p => p.id === productId);
+                if (!product) continue;
+                
+                totalAmount += product.price * quantity;
+                orderItems.push({
+                    productId: product.id,
+                    productName: product.name,
+                    quantity: quantity,
+                    price: product.price,
+                    total: product.price * quantity
+                });
+            }
+            
+            // Create order object
+            const order = {
+                orderId: StateManager.generateOrderId(),
+                userId: currentUser.id,
+                userName: currentUser.name,
+                items: orderItems,
+                totalAmount: totalAmount,
+                createdAt: new Date().toISOString(),
+                status: 'Placed'
+            };
+            
+            // Save order
+            StateManager.addOrder(order);
+            
+            // Clear cart
+            StateManager.setCart({});
+            
+            // Show success message
+            const container = document.getElementById('cart-items');
+            container.innerHTML = `
+                <div class="checkout-success">
+                    <div class="success-icon">✓</div>
+                    <h3>Order Placed Successfully!</h3>
+                    <p>Order ID: ${order.orderId}</p>
+                    <p>Thank you for shopping with Myntra Lite</p>
+                    <button class="btn btn-primary" onclick="showOrdersSection()">View Orders</button>
+                    <button class="btn btn-secondary" onclick="showProductsSection()">Continue Shopping</button>
+                </div>
+            `;
+            
+            // Clear summary
+            updateCartSummary(0, 0);
+        }
+
+        // Display user orders
+        function displayOrders() {
+            const orders = StateManager.getOrdersByUser(currentUser.id);
+            const container = document.getElementById('orders-list');
+            
+            if (orders.length === 0) {
+                container.innerHTML = '<div class="empty-state">No orders yet. Start shopping to place your first order!</div>';
+                return;
+            }
+            
+            container.innerHTML = '';
+            
+            // Sort orders by date (newest first)
+            orders.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+            
+            orders.forEach(order => {
+                const orderDate = new Date(order.createdAt).toLocaleDateString('en-IN', {
+                    year: 'numeric',
+                    month: 'short',
+                    day: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                });
+                
+                const orderCard = document.createElement('div');
+                orderCard.className = 'order-card';
+                
+                let itemsHtml = '';
+                order.items.forEach(item => {
+                    itemsHtml += `
+                        <div class="order-item">
+                            <span class="order-item-name">${item.productName}</span>
+                            <span class="order-item-qty">Qty: ${item.quantity}</span>
+                            <span class="order-item-price">₹${item.total.toLocaleString()}</span>
+                        </div>
+                    `;
+                });
+                
+                orderCard.innerHTML = `
+                    <div class="order-header">
+                        <div class="order-id">Order #${order.orderId}</div>
+                        <div class="order-status status-${order.status.toLowerCase()}">${order.status}</div>
+                    </div>
+                    <div class="order-date">${orderDate}</div>
+                    <div class="order-items">
+                        ${itemsHtml}
+                    </div>
+                    <div class="order-total">
+                        <strong>Total Amount:</strong> ₹${order.totalAmount.toLocaleString()}
+                    </div>
+                `;
+                
+                container.appendChild(orderCard);
+            });
+        }
+        
+        // Display products in grid
+        function displayProducts(products) {
+            const container = document.getElementById('products-container');
+            
+            if (products.length === 0) {
+                container.innerHTML = '<div class="empty-state">No products found matching your filters.</div>';
+                return;
+            }
+            
+            container.innerHTML = '';
+            
+            products.forEach(product => {
+                const card = document.createElement('div');
+                card.className = 'product-card';
+                
+                // Check if image is URL or emoji
+                const isImageUrl = product.image.startsWith('http');
+                const imageHtml = isImageUrl 
+                    ? `<img src="${product.image}" alt="${product.name}" onerror="this.style.display='none'; this.parentElement.innerHTML='<div class=\\'placeholder-image\\'>📦</div>'">` 
+                    : `<div class="placeholder-image">${product.image}</div>`;
+                
+                card.innerHTML = `
+                    <div class="product-image" onclick="viewProductDetail('${product.id}')" style="cursor: pointer;">
+                        ${imageHtml}
+                    </div>
+                    <div class="product-info">
+                        <h3 class="product-name" onclick="viewProductDetail('${product.id}')" style="cursor: pointer;">${product.name}</h3>
+                        <p class="product-category">${product.category}</p>
+                        <p class="product-price">₹${product.price.toLocaleString()}</p>
+                        <div class="product-actions">
+                            <button class="btn btn-secondary btn-small" onclick="viewProductDetail('${product.id}')">View Details</button>
+                            <button class="btn btn-primary btn-small" onclick="handleAddToCart('${product.id}', this)">Add to Cart</button>
+                        </div>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+        
+        // View product detail
+        function viewProductDetail(productId) {
+            window.location.href = `product-detail.html?id=${productId}`;
+        }
+        
+        // Setup filter controls
+        function setupFilters() {
+            const categorySelect = document.getElementById('category-filter');
+            const categories = getCategories(allProducts);
+            
+            categories.forEach(cat => {
+                const option = document.createElement('option');
+                option.value = cat;
+                option.textContent = cat;
+                categorySelect.appendChild(option);
+            });
+            
+            // Apply filters on change
+            document.getElementById('apply-filters').addEventListener('click', applyFilters);
+            
+            // Also apply on Enter key in price inputs
+            document.getElementById('min-price').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') applyFilters();
+            });
+            document.getElementById('max-price').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') applyFilters();
+            });
+        }
+        
+        // Apply filters
+        function applyFilters() {
+            currentFilters.category = document.getElementById('category-filter').value;
+            currentFilters.minPrice = parseInt(document.getElementById('min-price').value) || 0;
+            currentFilters.maxPrice = parseInt(document.getElementById('max-price').value) || 999999;
+            
+            let filtered = filterByCategory(allProducts, currentFilters.category);
+            filtered = filterByPriceRange(filtered, currentFilters.minPrice, currentFilters.maxPrice);
+            
+            displayProducts(filtered);
+        }
+        
+        // Handle add to cart with visual feedback
+        function handleAddToCart(productId, button) {
+            // Disable button temporarily
+            button.disabled = true;
+            const originalText = button.textContent;
+            button.textContent = 'Added!';
+            
+            // Add to cart
+            const count = addToCart(productId);
+            updateCartCount();
+            
+            // Show inline feedback
+            const feedback = document.createElement('span');
+            feedback.className = 'cart-feedback';
+            feedback.textContent = `(${count} in cart)`;
+            button.parentElement.appendChild(feedback);
+            
+            // Re-enable button after delay
+            setTimeout(() => {
+                button.disabled = false;
+                button.textContent = originalText;
+                feedback.remove();
+            }, 1500);
+        }
+        
+        // Update cart count display
+        function updateCartCount() {
+            const count = getCartCount();
+            document.getElementById('cart-count').textContent = count;
+            document.getElementById('nav-cart-count').textContent = count;
+        }
+        
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', initUserDashboard);
+    </script>
+</body>
+</html>

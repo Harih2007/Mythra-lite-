@@ -1,0 +1,371 @@
+[
+    {
+        "id":  "P001",
+        "name":  "Cotton T-Shirt",
+        "category":  "Men\u0027s Clothing",
+        "price":  499,
+        "merchantId":  "M001",
+        "image":  "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=400\u0026h=400\u0026fit=crop",
+        "description":  "Comfortable cotton t-shirt perfect for everyday wear. Breathable fabric with a classic fit."
+    },
+    {
+        "id":  "P002",
+        "name":  "Summer Dress",
+        "category":  "Women\u0027s Clothing",
+        "price":  1299,
+        "merchantId":  "M002",
+        "image":  "https://images.unsplash.com/photo-1595777457583-95e059d581b8?w=400\u0026h=400\u0026fit=crop",
+        "description":  "Elegant summer dress with floral patterns. Light and breezy for warm weather."
+    },
+    {
+        "id":  "P003",
+        "name":  "Running Shoes",
+        "category":  "Footwear",
+        "price":  2499,
+        "merchantId":  "M001",
+        "image":  "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=400\u0026h=400\u0026fit=crop",
+        "description":  "High-performance running shoes with cushioned sole. Perfect for your daily runs."
+    },
+    {
+        "id":  "P004",
+        "name":  "Leather Handbag",
+        "category":  "Accessories",
+        "price":  1999,
+        "merchantId":  "M003",
+        "image":  "https://images.unsplash.com/photo-1584917865442-de89df76afd3?w=400\u0026h=400\u0026fit=crop",
+        "description":  "Premium leather handbag with multiple compartments. Stylish and functional."
+    },
+    {
+        "id":  "P005",
+        "name":  "Denim Jeans",
+        "category":  "Men\u0027s Clothing",
+        "price":  1799,
+        "merchantId":  "M002",
+        "image":  "https://images.unsplash.com/photo-1542272604-787c3835535d?w=400\u0026h=400\u0026fit=crop",
+        "description":  "Classic blue denim jeans with a modern slim fit. Durable and comfortable."
+    },
+    {
+        "id":  "P006",
+        "name":  "Smart Watch",
+        "category":  "Electronics",
+        "price":  3999,
+        "merchantId":  "M001",
+        "image":  "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=400\u0026h=400\u0026fit=crop",
+        "description":  "Feature-packed smartwatch with fitness tracking and notifications."
+    },
+    {
+        "id":  "P007",
+        "name":  "Casual Shirt",
+        "category":  "Men\u0027s Clothing",
+        "price":  899,
+        "merchantId":  "M002",
+        "image":  "https://images.unsplash.com/photo-1596755094514-f87e34085b2c?w=400\u0026h=400\u0026fit=crop",
+        "description":  "Versatile casual shirt suitable for work or weekend outings."
+    },
+    {
+        "id":  "P008",
+        "name":  "Sunglasses",
+        "category":  "Accessories",
+        "price":  799,
+        "merchantId":  "M003",
+        "image":  "https://images.unsplash.com/photo-1572635196237-14b3f281503f?w=400\u0026h=400\u0026fit=crop",
+        "description":  "UV protection sunglasses with polarized lenses. Stylish and protective."
+    },
+    {
+        "id":  "P009",
+        "name":  "Leather Jacket",
+        "category":  "Men\u0027s Clothing",
+        "price":  4999,
+        "merchantId":  "M001",
+        "image":  "https://images.unsplash.com/photo-1551028719-00167b16eac5?w=400\u0026h=400\u0026fit=crop",
+        "description":  "Premium leather jacket with classic biker style. Timeless fashion statement."
+    },
+    {
+        "id":  "P010",
+        "name":  "Yoga Pants",
+        "category":  "Women\u0027s Clothing",
+        "price":  899,
+        "merchantId":  "M002",
+        "image":  "https://images.unsplash.com/photo-1506629082955-511b1aa562c8?w=400\u0026h=400\u0026fit=crop",
+        "description":  "Stretchy and comfortable yoga pants. Perfect for workouts or casual wear."
+    },
+    {
+        "id":  "P011",
+        "name":  "Sneakers",
+        "category":  "Footwear",
+        "price":  1899,
+        "merchantId":  "M003",
+        "image":  "https://images.unsplash.com/photo-1549298916-b41d501d3772?w=400\u0026h=400\u0026fit=crop",
+        "description":  "Trendy sneakers with comfortable cushioning. Great for everyday style."
+    },
+    {
+        "id":  "P012",
+        "name":  "Backpack",
+        "category":  "Accessories",
+        "price":  1299,
+        "merchantId":  "M001",
+        "image":  "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=400\u0026h=400\u0026fit=crop",
+        "description":  "Spacious backpack with laptop compartment. Ideal for work or travel."
+    },
+    {
+        "id":  "P013",
+        "name":  "Formal Blazer",
+        "category":  "Men\u0027s Clothing",
+        "price":  3499,
+        "merchantId":  "M002",
+        "image":  "https://images.unsplash.com/photo-1507679799987-c73779587ccf?w=400\u0026h=400\u0026fit=crop",
+        "description":  "Sharp formal blazer for business meetings. Tailored fit with premium fabric."
+    },
+    {
+        "id":  "P014",
+        "name":  "Evening Gown",
+        "category":  "Women\u0027s Clothing",
+        "price":  5999,
+        "merchantId":  "M003",
+        "image":  "https://images.unsplash.com/photo-1566174053879-31528523f8ae?w=400\u0026h=400\u0026fit=crop",
+        "description":  "Elegant evening gown for special occasions. Sophisticated and glamorous."
+    },
+    {
+        "id":  "P015",
+        "name":  "Wireless Earbuds",
+        "category":  "Electronics",
+        "price":  2499,
+        "merchantId":  "M001",
+        "image":  "https://images.unsplash.com/photo-1590658268037-6bf12165a8df?w=400\u0026h=400\u0026fit=crop",
+        "description":  "High-quality wireless earbuds with noise cancellation. Crystal clear sound."
+    },
+    {
+        "id":  "P016",
+        "name":  "Winter Coat",
+        "category":  "Women\u0027s Clothing",
+        "price":  4499,
+        "merchantId":  "M002",
+        "image":  "https://images.unsplash.com/photo-1539533018447-63fcce2678e3?w=400\u0026h=400\u0026fit=crop",
+        "description":  "Warm winter coat with insulated lining. Stylish protection from cold weather."
+    },
+    {
+        "id":  "P017",
+        "name":  "Sports Cap",
+        "category":  "Accessories",
+        "price":  399,
+        "merchantId":  "M003",
+        "image":  "https://images.unsplash.com/photo-1588850561407-ed78c282e89b?w=400\u0026h=400\u0026fit=crop",
+        "description":  "Adjustable sports cap with breathable fabric. Perfect for outdoor activities."
+    },
+    {
+        "id":  "P018",
+        "name":  "Formal Shoes",
+        "category":  "Footwear",
+        "price":  2999,
+        "merchantId":  "M001",
+        "image":  "https://images.unsplash.com/photo-1614252235316-8c857d38b5f4?w=400\u0026h=400\u0026fit=crop",
+        "description":  "Classic formal shoes with leather finish. Essential for professional attire."
+    },
+    {
+        "id":  "P019",
+        "name":  "Fitness Tracker",
+        "category":  "Electronics",
+        "price":  1999,
+        "merchantId":  "M002",
+        "image":  "https://images.unsplash.com/photo-1575311373937-040b8e1fd5b6?w=400\u0026h=400\u0026fit=crop",
+        "description":  "Compact fitness tracker with heart rate monitor. Track your health goals."
+    },
+    {
+        "id":  "P020",
+        "name":  "Ankle Boots",
+        "category":  "Footwear",
+        "price":  3299,
+        "merchantId":  "M001",
+        "image":  "https://images.unsplash.com/photo-1608256246200-53e635b5b65f?w=400\u0026h=400\u0026fit=crop",
+        "description":  "Stylish ankle boots with comfortable heel. Perfect for autumn and winter."
+    },
+    {
+        "id":  "P021",
+        "name":  "Crossbody Bag",
+        "category":  "Accessories",
+        "price":  1499,
+        "merchantId":  "M002",
+        "image":  "https://images.unsplash.com/photo-1548036328-c9fa89d128fa?w=400\u0026h=400\u0026fit=crop",
+        "description":  "Compact crossbody bag with adjustable strap. Ideal for daily essentials."
+    },
+    {
+        "id":  "P022",
+        "name":  "Hoodie",
+        "category":  "Men\u0027s Clothing",
+        "price":  1299,
+        "merchantId":  "M003",
+        "image":  "https://images.unsplash.com/photo-1556821840-3a63f95609a7?w=400\u0026h=400\u0026fit=crop",
+        "description":  "Cozy hoodie with front pocket. Perfect for casual comfort."
+    },
+    {
+        "id":  "P023",
+        "name":  "Maxi Dress",
+        "category":  "Women\u0027s Clothing",
+        "price":  1899,
+        "merchantId":  "M001",
+        "image":  "https://images.unsplash.com/photo-1572804013309-59a88b7e92f1?w=400\u0026h=400\u0026fit=crop",
+        "description":  "Flowing maxi dress with elegant design. Perfect for summer evenings."
+    },
+    {
+        "id":  "P024",
+        "name":  "Bluetooth Speaker",
+        "category":  "Electronics",
+        "price":  1799,
+        "merchantId":  "M002",
+        "image":  "https://images.unsplash.com/photo-1608043152269-423dbba4e7e1?w=400\u0026h=400\u0026fit=crop",
+        "description":  "Portable Bluetooth speaker with powerful sound. Waterproof design."
+    },
+    {
+        "id":  "P025",
+        "name":  "Chinos",
+        "category":  "Men\u0027s Clothing",
+        "price":  1599,
+        "merchantId":  "M003",
+        "image":  "https://images.unsplash.com/photo-1473966968600-fa801b869a1a?w=400\u0026h=400\u0026fit=crop",
+        "description":  "Comfortable chinos with modern fit. Versatile for work or casual wear."
+    },
+    {
+        "id":  "P026",
+        "name":  "Wallet",
+        "category":  "Accessories",
+        "price":  899,
+        "merchantId":  "M001",
+        "image":  "https://images.unsplash.com/photo-1627123424574-724758594e93?w=400\u0026h=400\u0026fit=crop",
+        "description":  "Genuine leather wallet with multiple card slots. Slim and elegant."
+    },
+    {
+        "id":  "P027",
+        "name":  "Sandals",
+        "category":  "Footwear",
+        "price":  999,
+        "merchantId":  "M002",
+        "image":  "https://images.unsplash.com/photo-1603487742131-4160ec999306?w=400\u0026h=400\u0026fit=crop",
+        "description":  "Comfortable sandals with cushioned footbed. Perfect for summer."
+    },
+    {
+        "id":  "P028",
+        "name":  "Power Bank",
+        "category":  "Electronics",
+        "price":  1299,
+        "merchantId":  "M001",
+        "image":  "https://images.unsplash.com/photo-1609091839311-d5365f9ff1c5?w=400\u0026h=400\u0026fit=crop",
+        "description":  "High-capacity power bank with fast charging. Keep devices powered on-the-go."
+    },
+    {
+        "id":  "P029",
+        "name":  "Track Pants",
+        "category":  "Men\u0027s Clothing",
+        "price":  999,
+        "merchantId":  "M002",
+        "image":  "https://images.unsplash.com/photo-1552902865-b72c031ac5ea?w=400\u0026h=400\u0026fit=crop",
+        "description":  "Comfortable track pants for sports and leisure. Breathable material."
+    },
+    {
+        "id":  "P030",
+        "name":  "Cardigan",
+        "category":  "Women\u0027s Clothing",
+        "price":  1699,
+        "merchantId":  "M003",
+        "image":  "https://images.unsplash.com/photo-1434389677669-e08b4cac3105?w=400\u0026h=400\u0026fit=crop",
+        "description":  "Soft knit cardigan for layering. Cozy and stylish for cooler days."
+    },
+    {
+        "id":  "P031",
+        "name":  "Loafers",
+        "category":  "Footwear",
+        "price":  2299,
+        "merchantId":  "M001",
+        "image":  "https://images.unsplash.com/photo-1533867617858-e7b97e060509?w=400\u0026h=400\u0026fit=crop",
+        "description":  "Elegant loafers with premium finish. Perfect for formal occasions."
+    },
+    {
+        "id":  "P032",
+        "name":  "Bomber Jacket",
+        "category":  "Men\u0027s Clothing",
+        "price":  3499,
+        "merchantId":  "M002",
+        "image":  "https://images.unsplash.com/photo-1591047139829-d91aecb6caea?w=400\u0026h=400\u0026fit=crop",
+        "description":  "Classic bomber jacket with ribbed cuffs. Timeless street style."
+    },
+    {
+        "id":  "P033",
+        "name":  "Jumpsuit",
+        "category":  "Women\u0027s Clothing",
+        "price":  2199,
+        "merchantId":  "M003",
+        "image":  "https://images.unsplash.com/photo-1594633312681-425c7b97ccd1?w=400\u0026h=400\u0026fit=crop",
+        "description":  "Trendy jumpsuit with comfortable fit. Easy one-piece styling."
+    },
+    {
+        "id":  "P034",
+        "name":  "Tablet",
+        "category":  "Electronics",
+        "price":  15999,
+        "merchantId":  "M001",
+        "image":  "https://images.unsplash.com/photo-1561154464-82e9adf32764?w=400\u0026h=400\u0026fit=crop",
+        "description":  "High-resolution tablet for work and entertainment. Powerful performance."
+    },
+    {
+        "id":  "P035",
+        "name":  "Cargo Pants",
+        "category":  "Men\u0027s Clothing",
+        "price":  1899,
+        "merchantId":  "M002",
+        "image":  "https://images.unsplash.com/photo-1624378439575-d8705ad7ae80?w=400\u0026h=400\u0026fit=crop",
+        "description":  "Utility cargo pants with multiple pockets. Functional and fashionable."
+    },
+    {
+        "id":  "P036",
+        "name":  "Denim Jacket",
+        "category":  "Men\u0027s Clothing",
+        "price":  2499,
+        "merchantId":  "M002",
+        "image":  "https://images.unsplash.com/photo-1601333144130-8cbb312386b6?w=400\u0026h=400\u0026fit=crop",
+        "description":  "Classic denim jacket with vintage wash. Essential layering piece."
+    },
+    {
+        "id":  "P037",
+        "name":  "Skirt",
+        "category":  "Women\u0027s Clothing",
+        "price":  1199,
+        "merchantId":  "M003",
+        "image":  "https://images.unsplash.com/photo-1583496661160-fb5886a0aaaa?w=400\u0026h=400\u0026fit=crop",
+        "description":  "Flowy midi skirt with elegant drape. Versatile for any occasion."
+    },
+    {
+        "id":  "P038",
+        "name":  "Headphones",
+        "category":  "Electronics",
+        "price":  3499,
+        "merchantId":  "M001",
+        "image":  "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400\u0026h=400\u0026fit=crop",
+        "description":  "Premium over-ear headphones with noise cancellation. Immersive audio."
+    },
+    {
+        "id":  "P039",
+        "name":  "High Heels",
+        "category":  "Footwear",
+        "price":  2799,
+        "merchantId":  "M002",
+        "image":  "https://images.unsplash.com/photo-1543163521-1bf539c55dd2?w=400\u0026h=400\u0026fit=crop",
+        "description":  "Elegant high heels for special occasions. Sophisticated and stylish."
+    },
+    {
+        "id":  "P040",
+        "name":  "Sweatshirt",
+        "category":  "Men\u0027s Clothing",
+        "price":  1099,
+        "merchantId":  "M003",
+        "image":  "https://images.unsplash.com/photo-1578587018452-892bacefd3f2?w=400\u0026h=400\u0026fit=crop",
+        "description":  "Comfortable sweatshirt with soft fleece lining. Perfect for lounging."
+    },
+    {
+        "id":  "P041",
+        "name":  "Leggings",
+        "category":  "Women\u0027s Clothing",
+        "price":  799,
+        "merchantId":  "M001",
+        "image":  "https://images.unsplash.com/photo-1506629082955-511b1aa562c8?w=400\u0026h=400\u0026fit=crop",
+        "description":  "Stretchy leggings with high waist. Comfortable for workouts or casual wear."
+    }
+]

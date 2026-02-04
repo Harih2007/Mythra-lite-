@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Myntra Lite - Your Fashion Destination</title>
+    <link rel="stylesheet" href="css/main.css">
+</head>
+<body>
+    <div class="landing-container">
+        <header class="landing-header">
+            <h1 class="site-name">Myntra Lite</h1>
+            <p class="tagline">Discover Fashion from Multiple Brands</p>
+        </header>
+        
+        <main class="landing-main">
+            <div class="hero-section">
+                <h2>Welcome to Myntra Lite</h2>
+                <p>Your one-stop destination for fashion and lifestyle products</p>
+                <a href="login.html" class="btn btn-primary">Login</a>
+                <br><br>
+                <a href="#" onclick="clearDataAndReload(event)" class="btn btn-secondary">Reset to Fresh Data</a>
+            </div>
+        </main>
+        
+        <footer class="landing-footer">
+            <p>&copy; 2026 Myntra Lite. All rights reserved.</p>
+        </footer>
+    </div>
+    
+    <script>
+        // Clear localStorage and reload
+        function clearDataAndReload(event) {
+            event.preventDefault();
+            localStorage.clear();
+            alert('All data cleared! Page will reload with 50 fresh products.');
+            location.reload();
+        }
+    </script>
+</body>
+</html>
